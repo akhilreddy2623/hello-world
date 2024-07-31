@@ -1,0 +1,42 @@
+version: "3.6"
+
+services:
+  server:
+    # specify the file paths you want to source configuration from
+    command: [ "/config/secrets.properties" ]
+    environment:
+      SERVER_PORT: 8080
+      JAVA_TOOL_OPTIONS: >-
+        -agentlib:jdwp=transport=dt_socket,address=*:8787,server=y,suspend=n
+      VOLTAGE_TRUSTSTORE_PATH: /user/lib/ssl/certs # trust store should have been set in the image, but it's not
+      VOLTAGE_ENVIRONMENT: NON_PRODUCTION
+      VOLTAGE_APPLICATION_NAME: voltage-sidecar-go-client-test
+      VOLTAGE_APPLICATION_VERSION: 1.0.0
+      VOLTAGE_GRPC_SERVER_SOCKET_TYPE: tcp # uds (unix domain socket) or tcp
+      VOLTAGE_GRPC_SERVER_SOCKET_PATH: /tmp/voltage-grpc-server.sock # uds only
+      VOLTAGE_GRPC_SERVER_SOCKET_HOST: 0.0.0.0 # tcp only
+      VOLTAGE_GRPC_SERVER_SOCKET_PORT: 50051 # tcp only
+      VOLTAGE_HEALTHCHECK_SENSITIVEELEMENTNAME: EmailAddress
+      VOLTAGE_HEALTHCHECK_PLAINTEXT: alice@example.com
+      # VOLTAGE_EAGER_CONFIGURATION_PATH: /config/eager-elements.json
+      VOLTAGE_USERNAME: ${VOLTAGE_USERNAME}
+      VOLTAGE_PASSWORD: ${VOLTAGE_PASSWORD}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/ready" ]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    image: artifactory-pd-infra.aks.aze1.cloud.geico.net/mvp-billing-container-all/iaas-cryptography-services/grpc-voltage-server
+    platform: linux/amd64
+    ports:
+      - "8080:8080"
+      # grpc over tcp (if enabled)
+      - "50051:50051"
+      # debug
+      - "48787:8787"
+    volumes:
+      - "./config:/config:ro"
+      # for uds only (mounts socket path), will not work on Mac when attempting to connect from your local machine to the VM.
+      - "/tmp:/tmp"
