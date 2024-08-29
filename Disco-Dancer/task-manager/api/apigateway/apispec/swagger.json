@@ -1,0 +1,373 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is Payment API.",
+        "title": "Payment task manager Web API",
+        "contact": {
+            "name": "ASD Billing DevOps",
+            "email": "ASDBillingDevOpsL2@geico.com"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/policy/{policynumber}/collection/v1": {
+            "get": {
+                "description": "This API returns collection status for the given policy number.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collection"
+                ],
+                "summary": "Gets Collection Status of a Policy.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Policy Number",
+                        "name": "policynumber",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.CollectionState"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/resources.ResponseResource"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/resources.ResponseResource"
+                        }
+                    }
+                }
+            }
+        },
+        "/health/live": {
+            "get": {
+                "description": "This API returns liveness status of the application. It is intended to be used with liveness probe of Kubernetes.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthcheck"
+                ],
+                "summary": "Liveness probe API.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/healthcheck.LivenessResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/health/ready": {
+            "get": {
+                "description": "This API returns readiness status of the application. It is intended to be used with readiness probe of Kubernetes.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthcheck"
+                ],
+                "summary": "Readiness probe API.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/healthcheck.ReadinessResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/health/status": {
+            "get": {
+                "description": "This is classic healthcheck status API. It returns overall status including dependencies.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthcheck"
+                ],
+                "summary": "Healthcheck Status API.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/statusapi.StatusApiHealthCheckResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/healthcheck/appstatus": {
+            "get": {
+                "description": "This is classic health check API that was used by ILB and F5s. It exists for backward compatibility and should rarely be used going forward.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthcheck"
+                ],
+                "summary": "Classic health check API",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/healthcheck.AppStatusResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "buildinfo.BuildInfo": {
+            "type": "object",
+            "properties": {
+                "branch": {
+                    "type": "string"
+                },
+                "buildTimestamp": {
+                    "type": "string"
+                },
+                "commitHash": {
+                    "type": "string"
+                },
+                "commitTimestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "healthcheck.AppStatusResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/healthcheck.Status"
+                }
+            }
+        },
+        "healthcheck.LivenessResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "$ref": "#/definitions/healthcheck.LivenessStatus"
+                }
+            }
+        },
+        "healthcheck.LivenessStatus": {
+            "type": "string",
+            "enum": [
+                "Live"
+            ],
+            "x-enum-varnames": [
+                "Live"
+            ]
+        },
+        "healthcheck.ReadinessResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "$ref": "#/definitions/healthcheck.ReadinessStatus"
+                }
+            }
+        },
+        "healthcheck.ReadinessStatus": {
+            "type": "string",
+            "enum": [
+                "Ready"
+            ],
+            "x-enum-varnames": [
+                "Ready"
+            ]
+        },
+        "healthcheck.Status": {
+            "type": "string",
+            "enum": [
+                "DSHC_Active"
+            ],
+            "x-enum-varnames": [
+                "DSHCAlive"
+            ]
+        },
+        "model.ActionCodes": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14
+            ],
+            "x-enum-varnames": [
+                "Unassigned",
+                "SmallBalanceWriteOffDebt",
+                "InitiateInternalCollection",
+                "SendEpInvoice",
+                "SendEmail1",
+                "SendEmail2",
+                "SendEmail3",
+                "SendEmail4",
+                "SendLetter1",
+                "SendLetter2",
+                "SendLetter3",
+                "NoAction",
+                "StopInternalCollection",
+                "InitiateExternalCollection",
+                "CollectionWriteOff"
+            ]
+        },
+        "model.CollectionState": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "$ref": "#/definitions/model.ActionCodes"
+                },
+                "changeDateTime": {
+                    "type": "string"
+                },
+                "offsetDays": {
+                    "type": "integer"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/model.CollectionStatus"
+                }
+            }
+        },
+        "model.CollectionStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-varnames": [
+                "Unknown",
+                "Started",
+                "Stopped",
+                "Paused"
+            ]
+        },
+        "model.Notice": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "resources.ResponseResource": {
+            "type": "object",
+            "properties": {
+                "notice": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Notice"
+                    }
+                }
+            }
+        },
+        "statusapi.SettingItem": {
+            "type": "object",
+            "properties": {
+                "settingName": {
+                    "type": "string"
+                },
+                "settingValue": {
+                    "type": "string"
+                }
+            }
+        },
+        "statusapi.StatusApiHealthCheckResult": {
+            "type": "object",
+            "properties": {
+                "buildInfo": {
+                    "$ref": "#/definitions/buildinfo.BuildInfo"
+                },
+                "overallStatus": {
+                    "$ref": "#/definitions/statusapi.StatusVerificationResult"
+                },
+                "settingItems": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/statusapi.SettingItem"
+                    }
+                },
+                "statusTimestamp": {
+                    "type": "string"
+                },
+                "verificationItems": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/statusapi.VerificationItem"
+                    }
+                }
+            }
+        },
+        "statusapi.StatusVerificationResult": {
+            "type": "integer",
+            "enum": [
+                1,
+                -2
+            ],
+            "x-enum-varnames": [
+                "StatusVerificationResultOk",
+                "StatusVerificationResultError"
+            ]
+        },
+        "statusapi.VerificationItem": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "durationMs": {
+                    "type": "integer"
+                },
+                "errorMessage": {
+                    "type": "string"
+                },
+                "healthStatus": {
+                    "$ref": "#/definitions/statusapi.StatusVerificationResult"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "verificationType": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

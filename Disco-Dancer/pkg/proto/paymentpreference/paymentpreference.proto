@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package paymentpreference;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "./paymentpreference";
+
+message PaymentPreferenceRequest {
+  string userId = 1;
+  string productIdentifier  = 2;
+  string transactionType = 3;
+  string paymentRequestType = 4;
+}
+
+message PaymentPreference{
+   string paymentMethodType = 1; 
+   string accountIdentifier = 2; 
+   string routingNumber = 3; 
+   string paymentExtendedData = 4; 
+   bool walletStatus = 5; 
+   string paymentMethodStatus = 6; 
+   google.protobuf.Timestamp accountValidationDate = 7; 
+   bool walletAccess = 8; 
+   bool autoPayPreference = 9; 
+   int32 split = 10; 
+   string last4AccountIdentifier = 11;
+}
+
+message PaymentPreferenceResponse{
+   repeated PaymentPreference paymentPreference = 1 ;  
+}
+
+service PaymentPreferenceService {
+    rpc GetPaymentPreference (PaymentPreferenceRequest) returns (PaymentPreferenceResponse);
+}
+
+

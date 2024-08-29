@@ -1,0 +1,93 @@
+<section>
+   
+  <article style="background-color:rgb(223, 219, 219);">
+    &emsp;
+    &emsp;
+    <h2 style="background-color:LightGray;">Introduction</h2>
+    <p>This is a test API deployed for testing simple Rest api functionality with OAuth.</p>
+    <p><p>Use quick start guide to test this api. </p></p>
+    &emsp;
+
+
+    <h2 style="background-color:LightGray;">Quick Start Guide : </h2>
+    &emsp;
+    &emsp;
+    <h3>How to consume the API</h3>
+    <p>This is a Geico internal api, consumers will be accessing it from Geico internal network and/or from Azure network</p>
+    <h4>Endpoints</h4>
+    <p>From developers machine : harouter.agnpdp.np1.aze1.cloud.geico.net </p>
+
+
+
+    <h3>Authentication</h3>
+    <p>Authenticate using JWT token before accessing the resources.</p>
+    <p>Refer platform Teams documentation to request Access to the API <a href="https://geico365.sharepoint.com/sites/AsynchronousIntegration/SitePages/ClientApplicationRegistration.aspx">documentation</a></p>
+    &emsp;
+    <p style="padding: 20px;background-color:white"></p>
+    <h3>Sample cURL getToken</h3>
+    <p>
+        <pre>
+        <code>
+        </br>
+        curl --location 'https://login.microsoftonline.com/7389d8c0-3607-465c-a69f-7d4426502912/oauth2/v2.0/token' \ </br>
+        --header 'Content-Type: application/x-www-form-urlencoded' \ </br>
+        --data-urlencode 'scope=api://apisixrestapi-apimtm-dv1-v1/.default' \ </br>
+        --data-urlencode 'grant_type=client_credentials' \ </br>
+        --data-urlencode 'client_id=xxxx' \ </br>
+        --data-urlencode 'client_secret=xxxxxxx' </br>
+        </code>
+        </pre>
+     <p>Sample Response</p>
+    <pre>
+        <code>
+            </br>
+            { </br>
+                "token_type": "Bearer", </br>
+                "expires_in": 3599, </br>
+                "ext_expires_in": 3599, </br>
+                "access_token": "xxxmOTdaRSJ9.eyJhdWQiOiJhcGk6Ly9hcGlzaXhyZXN0YXBpLWFwaW10xxx" </br>
+            } </br>
+        </code>
+    </pre>
+    </p>
+    <h3>Sample getHealth</h3>
+    <p>
+        <pre>
+        <code>
+            </br>
+            curl --location 'https://harouter.agnpdp.np1.aze1.cloud.geico.net/dv1/apisixrestapi-int/api/health' \ </br>
+            --header 'version: v1' \ </br>
+            --header 'client_id: xxxxx' \ </br>
+            --header 'Authorization: Bearer 'xxxmOTdaRSJ9.eyJhdWQiOiJhcGk6Ly9hcGlzaXhyZXN0YXBpLWFwaW10xxx' </br>
+        </code>
+        </pre>
+    
+    <p>Sample Response</p>
+        <pre>
+        <code>
+            </br>
+            {</br>
+                "message": "App is Running and accessible" </br>
+            } </br>
+        </code>
+        </pre>
+    </p>
+
+ <p style="padding: 20px;background-color:white"></p>
+    <h3>Contact us</h3>
+    <table style="width:50%">
+        <tr>
+          <td>API Owner</td>
+          <td>IPG Api Management</td>    
+        </tr>
+        <tr>
+          <td>Team Contact</td>
+          <td>IPGAPIManagement@geico.com</td>
+        </tr>
+      </table>
+
+
+  </article>
+  &emsp;
+</section>
+

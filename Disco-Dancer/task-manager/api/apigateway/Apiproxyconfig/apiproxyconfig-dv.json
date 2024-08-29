@@ -1,0 +1,15 @@
+{
+   	"GroupName": "Magma",	
+	"ApiEnvName" : "dv",
+	"ApiVersion": "1.0",
+	"ApiVersionEnable" : false,
+	"ApiEndpointURL": "https://bilpmt-tskapi-dv.payment-dv.svc.cluster.local",
+	"ApiSpecificationURL": "",
+	"ApiSpecPath" : "apispec/task-manager-swagger.json",
+	"SpecVersion": "OAS2",
+	"CustomPolicy" : true,
+	"CustomPolicyPath" : "Policies/Policies-dv.json",
+	"CustomSlatier" : false,
+	"CustomSlatierPath" : "Slatier/slatier.json",
+	"CustomHost": "bilpmt-tskapi-dv.geico.net"
+}
