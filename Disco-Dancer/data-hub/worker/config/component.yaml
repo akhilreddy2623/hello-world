@@ -1,0 +1,27 @@
+###***********************************************************************************
+###*******    Deployment Template for dhbwrk ****************************
+###*********************************************************************************
+###********** Please contact Billing CM (asdbillcm@geico.com) for any updates
+############Base template referred 
+kind: Component
+metadata:  
+  classification: worker.k8s.deployment
+  service:
+    name: dhbwrk # Name of the application component
+    description: dhbwrk # Description of the application component
+    system: bilpmt # Service Id of the application (enterprise acronym)
+    component: dhbwrk # Component Id of the application component that uniquely identifies the component
+    systemTier: tier # Tier of the application component
+    department: PaymentTech # Department of the application componentS
+    owner: PaymentTech # Owner of the application component
+    dataClassification: "PII" 
+    notifications: 
+        - paasmvpteam@geico.com
+        - asdbillcm@geico.com
+        - asdbillingdevopsl2@geico.com
+        - nishah@geico.com
+        - gpp@geico.com
+  placement:
+    preference:
+      cloudProvider:
+        name: "On-Prem" # Azure, On-Prem, AWS

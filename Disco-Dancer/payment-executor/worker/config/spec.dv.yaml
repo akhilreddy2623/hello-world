@@ -1,0 +1,134 @@
+###***********************************************************************************
+###*******    Deployment Template for extwrk (Worker) ****************************
+###*********************************************************************************
+###********** Please contact Billing CM (asdbillcm@geico.com) for any updates
+############Base template referred 
+###https://geico.visualstudio.com/PaaS-Serverless/_git/orchestration-mvp?path=/collections/workercomponent/config/deployment.dv.yaml
+version: 4.4.0
+# Breaking changes .Containers will be run as nonroot users by default as part of security requirements
+
+# namspace should be created prior to deployment.work with platform team to create the namespace
+namespacePrefix: "payment" # Namespace prefix will be used for deployment of the componets in the Cluster. Final namespace will include the environment. for instance 'billing' is namespacePrefix and 'dv' is environment then all the components will be deployed in 'billing-dv' namespace in the cluster, And RBAC will be given to this namespace.
+
+tags:           # Tags key value pair (environment, serviceId, componentId, type will be auto included by orchestration)
+  tag1: workercomponent  # Custom tags are optional
+  tag2: extwrk
+
+containers:
+- name: main  # Keep the name of main container unchanged
+  type: main
+  env:
+    - name: HTTP_PROXY
+      value : http://cnfappproxy.geico.net:80
+    - name: HTTPS_PROXY
+      value: http://cnfappproxy.geico.net:80
+    - name: NO_PROXY
+      value: .appserviceenvironment.net,.geicoddc.net,10.0.0.0/8,192.168.0.0/16,172.16.0.0/16,10.251.97.0/23,10.243.97.0/23,geico.net,.geico.net,geico.corp.net,frws7699.geico.corp.net,10.250.147.192,10.250.178.199,10.250.178.250,10.152.183.1,10.152.183.0/24,10.96.0.0/12,100.64.0.0/16,10.1.1.0/24,10.250.178.21,10.250.178.75,10.250.46.49,localhost,127.0.0.1,svc,.svc,.cluster.local,cluster.local,.svc.cluster.local,svc.cluster.local,10.96.0.1,frun11562.geico.net,frun11563.geico.net,frun11564.geico.net,frun11565.geico.net,10.250.178.70,10.250.178.37,10.250.178.38,10.250.178.46,10.250.178.72,10.250.46.102,10.96.0.1
+    - name: http_proxy
+      value: http://cnfappproxy.geico.net:80
+    - name: https_proxy
+      value : http://cnfappproxy.geico.net:80
+    - name: no_proxy
+      value : .appserviceenvironment.net,.geicoddc.net,10.0.0.0/8,192.168.0.0/16,172.16.0.0/16,10.251.97.0/23,10.243.97.0/23,geico.net,.geico.net,geico.corp.net,frws7699.geico.corp.net,10.250.147.192,10.250.178.199,10.250.178.250,10.152.183.1,10.152.183.0/24,10.96.0.0/12,100.64.0.0/16,10.1.1.0/24,10.250.178.21,10.250.178.75,10.250.46.49,localhost,127.0.0.1,svc,.svc,.cluster.local,cluster.local,.svc.cluster.local,svc.cluster.local,10.96.0.1,frun11562.geico.net,frun11563.geico.net,frun11564.geico.net,frun11565.geico.net,10.250.178.70,10.250.178.37,10.250.178.38,10.250.178.46,10.250.178.72,10.250.46.102,10.96.0.1
+  livenessProbe:
+      exec:
+        command:
+        - ls
+      initialDelaySeconds: 5
+      periodSeconds: 5
+  readinessProbe:
+      exec:
+        command:
+        - ls
+      initialDelaySeconds: 5
+      periodSeconds: 5
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 250m
+    limits:
+      memory: 1Gi
+      cpu: 500m
+  volumes: []
+- name: extwrk-voltage-sidecar
+  type: sidecar  # Keep the type of sidecar container unchanged
+  image: 
+    repository: artifactory-pd-infra.aks.aze1.cloud.geico.net/mvp-billing-container-all/iaas-cryptography-services/grpc-voltage-server
+    tag: latest
+  # This will alter the ENTRYPOINT of your container
+  # command: ["/config/default.properties", "/config/secrets.properties"]
+  # Here Path indicates the location of your container Startup/EntryPoint Command
+  # despite the settings file being labelled as json, it doesn't have to be.
+  command: ["java", "-Dvoltage.trustStore.path=/usr/lib/ssl/certs", "-cp", "@/app/jib-classpath-file", "com.geico.voltage.crypto.grpc.server.VoltageCryptoGrpcServerApplication"]
+  args: ["/vault/secrets/secrets.properties"]
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 250m
+    limits:
+      memory: 1Gi
+      cpu: 500m
+  env:
+  - name: JAVA_TOOL_OPTIONS
+    value: -Dvoltage.trustStore.path=/usr/lib/ssl/certs -agentlib:jdwp=transport=dt_socket,address=*:8787,server=y,suspend=n
+  - name: SERVER_PORT
+    value: 8080
+  - name: VOLTAGE_ENVIRONMENT
+    value: NON_PRODUCTION
+  - name: VOLTAGE_APPLICATION_NAME
+    value: voltage-sidecar-extwrk
+  - name: VOLTAGE_APPLICATION_VERSION
+    value: 1.0.0
+  - name: VOLTAGE_GRPC_SERVER_SOCKET_TYPE
+    value: tcp # uds or tcp ###change
+  - name: VOLTAGE_GRPC_SERVER_SOCKET_PATH
+    value: /tmp/voltage-grpc-server.sock # uds only
+  #Uncommenting for TCP
+  - name: VOLTAGE_GRPC_SERVER_SOCKET_HOST # tcp only
+    value: 0.0.0.0
+  - name: VOLTAGE_GRPC_SERVER_SOCKET_PORT # tcp only
+    value: 50051
+  #####
+  - name: VOLTAGE_HEALTHCHECK_SENSITIVEELEMENTNAME
+    value: EmailAddress
+  - name: VOLTAGE_HEALTHCHECK_PLAINTEXT
+    value: dhakumar@geico.com
+  startupProbe:
+    initialDelaySeconds: 5
+    timeoutSeconds: 10
+    grpc:
+      port: 50051
+      initialDelaySeconds: 10
+storage: []
+
+scaling:
+  replicas: 1
+  autoscaling:
+    minReplicas: 1
+    maxReplicas: 5
+
+## To be updated for payments
+secrets:
+  serviceAccountName: svc-vlt-pmtexec-np
+  vault.hashicorp.com/role: vr_payments_executor
+  vault.hashicorp.com/secret-volume-path: /vault/secrets
+  vault.hashicorp.com/agent-inject-secret-secrets.properties: "ve_payments_executor/data/extwrk_dv1"
+  vault.hashicorp.com/agent-inject-template-secrets.properties: |
+    {{- with secret "ve_payments_executor/data/extwrk_dv1" -}}
+        voltage.credentials.username={{ .Data.data.volUserName }}
+        voltage.credentials.password={{ .Data.data.volPassword }}
+    {{- end }}
+  # Create JSON with key pair for all keys in the secret
+  vault.hashicorp.com/agent-inject-secret-secrets.json: 've_payments_executor/data/extwrk_dv1'
+  vault.hashicorp.com/agent-inject-template-secrets.json: |
+      {{- with secret "ve_payments_executor/data/extwrk_dv1" -}}
+      {
+        {{- $counter := 1 -}}
+        {{- $totalKeys := len .Data.data -}}
+        {{- range $key, $value := .Data.data }}
+        "{{ $key }}":"{{ $value }}"{{ if ne $counter $totalKeys }},{{ end }}
+        {{- $counter = add $counter 1 -}}
+        {{- end }}
+      }
+      {{- end }} 
+

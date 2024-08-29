@@ -1,0 +1,136 @@
+definitions:
+  app.ErrorResponse:
+    properties:
+      message:
+        example: some error happened
+        type: string
+      type:
+        example: error
+        type: string
+    type: object
+  app.HealthCheckResponse:
+    properties:
+      configfilename:
+        example: appsettings.dv.json
+        type: string
+      data: {}
+      databasestatus:
+        example: Up
+        type: string
+      error:
+        example: false
+        type: boolean
+      errorresponse:
+        $ref: '#/definitions/app.ErrorResponse'
+      message:
+        example: I am alive !!
+        type: string
+      seceretsavailable:
+        example: "yes"
+        type: string
+    type: object
+  app.PaymentRequest:
+    properties:
+      accountId:
+        example: PQR123
+        type: string
+      callerApp:
+        example: mcp
+        type: string
+      metadata:
+        example: '{}'
+        type: string
+      paymentExtractionSchedule:
+        items:
+          $ref: '#/definitions/models.PaymentExtractionSchedule'
+        type: array
+      paymentFrequency:
+        example: onetime
+        type: string
+      paymentRequestType:
+        example: iaa
+        type: string
+      productIdentifier:
+        example: ALL
+        type: string
+      tenantRequestId:
+        example: 1234567
+        type: integer
+      tenantid:
+        example: 101
+        type: integer
+      transactionType:
+        example: payout
+        type: string
+      userId:
+        example: "125"
+        type: string
+    type: object
+  app.PaymentResponse:
+    properties:
+      errorDetails:
+        $ref: '#/definitions/app.ErrorResponse'
+      status:
+        example: accepted
+        type: string
+      tenantRequestId:
+        example: 123456789
+        type: integer
+    type: object
+  models.PaymentExtractionSchedule:
+    properties:
+      amount:
+        example: 100.21
+        type: number
+      date:
+        example: "2020-01-01"
+        type: string
+    type: object
+info:
+  contact:
+    email: GPP@geico.com
+    name: Payment Platform Dev Team
+  description: Responsible for handling incoming payment requests and managing payment
+    schedules.
+  title: GEICO Payment Platform Administrator API
+  version: "1.0"
+paths:
+  /health/ready:
+    get:
+      description: This API returns the Health Check Status of the application
+      produces:
+      - application/json
+      responses:
+        default:
+          description: Health Check Results
+          schema:
+            $ref: '#/definitions/app.HealthCheckResponse'
+      summary: HealthCheck of the application
+      tags:
+      - HealthCheck
+  /payment:
+    post:
+      consumes:
+      - application/json
+      description: This API accepts a request to make a payment through GEICO Payment
+        Platform. Onboarding teams should onboard as a Tenant and setup a payment
+        request type. Drop email to GPP@geico.com for more details
+      parameters:
+      - description: PaymentRequest object that needs to be processed
+        in: body
+        name: PaymentRequest
+        required: true
+        schema:
+          $ref: '#/definitions/app.PaymentRequest'
+      produces:
+      - application/json
+      responses:
+        default:
+          description: Status of payment request, errorDetails will be only returned
+            in case of 4XX or 5XX error
+          schema:
+            $ref: '#/definitions/app.PaymentResponse'
+      summary: Make Payment request to GEICO Payment Platform
+      tags:
+      - Administrator
+swagger: "2.0"

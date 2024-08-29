@@ -1,0 +1,7 @@
+grpc:
+  - name: paymentvaultgrpc         
+    port: 3051                      
+    enabled: true                 
+    sw:
+      enabled: true               
+      jsonPath: "../../../pkg/proto/paymentpreference" 

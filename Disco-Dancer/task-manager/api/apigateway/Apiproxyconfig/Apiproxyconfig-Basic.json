@@ -1,0 +1,9 @@
+{
+    "ApiName": "tskapi",
+    "ApiDescription": "Payment Platforms API's",
+    "ApiType": "rest",
+    "ApiProxyType": "internal",
+    "ApplicationAcronym": "tskapi",
+    "Emailrecipient": "paasmvpteam@geico.com,asdbillcm@geico.com,asdbillingdevopsl2@geico.com,SanSingh@geico.com,nishah@geico.com,gsingh@geico.com,dhakumar@geico.com,AbTripathi@geico.com",
+    "EnterpriseSystemAcronym": "bilpmt"
+}

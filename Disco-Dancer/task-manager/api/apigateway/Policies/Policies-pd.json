@@ -1,0 +1,33 @@
+{
+    "plugins": {
+        "custom-jwt": {
+            "api": "tskapi-bilpmt-pd-v1",
+            "clientheader_validation": false,
+            "set_access_token_header": true,
+            "contract_validation": false,
+            "proxy_opts": {
+                "https_proxy": "http://cnfappproxy.geico.net:80/",
+                "http_proxy": "http://cnfappproxy.geico.net:80/"
+            },
+            "skip_auth_uri_list":["/health/live","/health/ready","/health/status"],
+            "_meta": {
+                "priority": 3001
+            }
+        },
+        "response-rewrite": {
+            "body_base64": false,
+            "headers": {
+                "set": {
+                    "X-corr-id": "$request_id"
+                }
+            },
+            "vars": [
+                [
+                    "status",
+                    "==",
+                    200
+                ]
+            ]
+        }
+    }
+}

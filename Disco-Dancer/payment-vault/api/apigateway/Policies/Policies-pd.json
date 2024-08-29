@@ -1,0 +1,31 @@
+{
+    "plugins": {
+        "custom-jwt": {
+            "api": "vltapi-bilpmt-pd-v1",
+            "clientheader_validation": false,
+            "set_access_token_header": true,
+            "proxy_opts": {
+                "https_proxy": "http://cnfappproxy.geico.net:80/",
+                "http_proxy": "http://cnfappproxy.geico.net:80/"
+            },
+            "_meta": {
+                "priority": 88
+            }
+        },
+        "response-rewrite": {
+            "body_base64": false,
+            "headers": {
+                "set": {
+                    "X-corr-id": "$request_id"
+                }
+            },
+            "vars": [
+                [
+                    "status",
+                    "==",
+                    200
+                ]
+            ]
+        }
+    }
+}

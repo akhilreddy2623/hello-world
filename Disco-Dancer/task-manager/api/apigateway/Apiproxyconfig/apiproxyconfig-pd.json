@@ -1,0 +1,14 @@
+{
+   	"GroupName": "Magma",	
+	"ApiEnvName" : "pd",
+	"ApiVersion": "1.0",
+	"ApiVersionEnable" : false,
+	"ApiEndpointURL": "https://bilpmt-tskapi-pd.payment-pd.svc.cluster.local",
+	"ApiSpecificationURL": "",
+	"ApiSpecPath" : "apispec/task-manager-swagger.json",
+	"CustomPolicy" : true,
+	"CustomPolicyPath" : "Policies/Policies-pd.json",
+	"CustomSlatier" : true,
+	"CustomSlatierPath" : "Slatier/Slatier.json",
+	"CustomHost": "bilpmt-tskapi-pd.geico.net"
+}
