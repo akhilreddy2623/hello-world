@@ -3,7 +3,6 @@ package integrationtest
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"sync"
 	"testing"
 
