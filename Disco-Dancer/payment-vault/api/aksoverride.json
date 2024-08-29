@@ -1,7 +1,0 @@
-{
-    "helmchart": {
-       "path":"bilpmt/vltapi",
-        "name":"gknpyt-cht",
-        "version":"0.1.0"
-    }
-}
